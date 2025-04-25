@@ -1,0 +1,351 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 1rem;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s;
+}
+
+nav a:hover, nav a.active {
+    background-color: #3498db;
+}
+
+main {
+    flex: 1;
+    padding: 1rem;
+}
+
+footer {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto;
+}
+
+/* Estilos de secciones */
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+/* Estilos de tarjetas */
+.card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.card h3 {
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #3498db;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Estilos de formularios */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Estilos de botones */
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn-info {
+    background-color: #1abc9c;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #16a085;
+}
+
+/* Estilos de tablas */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.table th, .table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #3498db;
+    color: white;
+}
+
+.table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.table .actions {
+    display: flex;
+    gap: 5px;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Estilos para contenedores de módulos */
+.ventas-container,
+.inventario-container,
+.platillos-container,
+.clientes-container,
+.finanzas-container {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.ventas-container {
+    grid-template-columns: 1fr 1.5fr;
+}
+
+.inventario-container,
+.platillos-container,
+.clientes-container {
+    grid-template-columns: 1fr 2fr;
+}
+
+.finanzas-container {
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: auto 1fr;
+}
+
+.finanzas-filtros {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.finanzas-resumen {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.finanzas-detalle {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+}
+
+.finanzas-form {
+    grid-column: 1 / span 2;
+}
+
+/* Estilos para gráficos */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* Estilos para modales */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+}
+
+.close:hover {
+    color: #e74c3c;
+}
+
+/* Estilos responsive */
+@media (max-width: 768px) {
+    .ventas-container,
+    .inventario-container,
+    .platillos-container,
+    .clientes-container {
+        grid-template-columns: 1fr;
+    }
+
+    .finanzas-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+    }
+
+    .finanzas-filtros {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .finanzas-resumen {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .finanzas-detalle {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .finanzas-form {
+        grid-column: 1;
+        grid-row: 4;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

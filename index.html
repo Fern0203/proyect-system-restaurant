@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Restaurante</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-utensils"></i> Sistema de Restaurante</h1>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active" data-section="dashboard"><i class="fas fa-home"></i> Inicio</a></li>
+                    <li><a href="#" data-section="ventas"><i class="fas fa-cash-register"></i> Ventas</a></li>
+                    <li><a href="#" data-section="inventario"><i class="fas fa-boxes"></i> Inventario</a></li>
+                    <li><a href="#" data-section="platillos"><i class="fas fa-utensils"></i> Platillos</a></li>
+                    <li><a href="#" data-section="clientes"><i class="fas fa-users"></i> Clientes</a></li>
+                    <li><a href="#" data-section="finanzas"><i class="fas fa-chart-line"></i> Finanzas</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Sección Dashboard -->
+            <section id="dashboard" class="section active">
+                <h2><i class="fas fa-home"></i> Dashboard</h2>
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-chart-bar"></i> Ventas Hoy</h3>
+                        <p id="ventas-hoy">Q0.00</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-box-open"></i> Inventario Bajo</h3>
+                        <p id="inventario-bajo">0</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-users"></i> Clientes Registrados</h3>
+                        <p id="total-clientes">0</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-coins"></i> Balance Mensual</h3>
+                        <p id="balance-mensual">Q0.00</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="ventasChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Sección Ventas -->
+            <section id="ventas" class="section">
+                <h2><i class="fas fa-cash-register"></i> Módulo de Ventas</h2>
+                <div class="ventas-container">
+                    <div class="ventas-form">
+                        <h3>Nueva Venta</h3>
+                        <div class="form-group">
+                            <label for="cliente-venta">Cliente:</label>
+                            <select id="cliente-venta" class="form-control">
+                                <option value="">Seleccionar cliente...</option>
+                            </select>
+                            <button id="nuevo-cliente-btn" class="btn btn-secondary">Nuevo Cliente</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="platillo-venta">Platillo:</label>
+                            <select id="platillo-venta" class="form-control">
+                                <option value="">Seleccionar platillo...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cantidad-venta">Cantidad:</label>
+                            <input type="number" id="cantidad-venta" class="form-control" min="1" value="1">
+                        </div>
+
+                        <button id="agregar-platillo-btn" class="btn btn-primary">Agregar a la Venta</button>
+
+                        <h4>Detalle de Venta</h4>
+                        <table id="detalle-venta" class="table">
+                            <thead>
+                                <tr>
+                                    <th>Platillo</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Subtotal</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                                    <td id="total-venta">Q0.00</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <button id="finalizar-venta-btn" class="btn btn-success">Finalizar Venta</button>
+                        <button id="cancelar-venta-btn" class="btn btn-danger">Cancelar Venta</button>
+                    </div>
+
+                    <div class="ventas-historial">
+                        <h3>Historial de Ventas</h3>
+                        <div class="form-group">
+                            <label for="filtro-fecha">Filtrar por fecha:</label>
+                            <input type="date" id="filtro-fecha" class="form-control">
+                        </div>
+                        <table id="historial-ventas" class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <button id="generar-reporte-ventas" class="btn btn-info">Generar Reporte</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección Inventario -->
+            <section id="inventario" class="section">
+                <h2><i class="fas fa-boxes"></i> Módulo de Inventario</h2>
+                <div class="inventario-container">
+                    <div class="inventario-form">
+                        <h3>Gestionar Inventario</h3>
+                        <div class="form-group">
+                            <label for="ingrediente-nombre">Nombre del Ingrediente:</label>
+                            <input type="text" id="ingrediente-nombre" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ingrediente-unidad">Unidad de Medida:</label>
+                            <input type="text" id="ingrediente-unidad" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ingrediente-stock">Stock Actual:</label>
+                            <input type="number" id="ingrediente-stock" class="form-control" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ingrediente-minimo">Stock Mínimo:</label>
+                            <input type="number" id="ingrediente-minimo" class="form-control" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ingrediente-precio">Precio de Compra:</label>
+                            <input type="number" id="ingrediente-precio" class="form-control" step="0.01" min="0">
+                        </div>
+
+                        <button id="guardar-ingrediente-btn" class="btn btn-primary">Guardar Ingrediente</button>
+                        <button id="nuevo-ingrediente-btn" class="btn btn-secondary">Nuevo Ingrediente</button>
+                        <input type="hidden" id="ingrediente-id">
+                    </div>
+
+                    <div class="inventario-lista">
+                        <h3>Lista de Ingredientes</h3>
+                        <div class="form-group">
+                            <input type="text" id="buscar-ingrediente" class="form-control" placeholder="Buscar ingrediente...">
+                        </div>
+                        <table id="tabla-ingredientes" class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Stock</th>
+                                    <th>Stock Mínimo</th>
+                                    <th>Precio</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <button id="generar-reporte-inventario" class="btn btn-info">Generar Reporte</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección Platillos -->
+            <section id="platillos" class="section">
+                <h2><i class="fas fa-utensils"></i> Módulo de Platillos</h2>
+                <div class="platillos-container">
+                    <div class="platillos-form">
+                        <h3>Gestionar Platillos</h3>
+                        <div class="form-group">
+                            <label for="platillo-nombre">Nombre del Platillo:</label>
+                            <input type="text" id="platillo-nombre" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="platillo-categoria">Categoría:</label>
+                            <select id="platillo-categoria" class="form-control">
+                                <option value="">Seleccionar categoría...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="platillo-descripcion">Descripción:</label>
+                            <textarea id="platillo-descripcion" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="platillo-precio">Precio de Venta:</label>
+                            <input type="number" id="platillo-precio" class="form-control" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="platillo-costo">Costo Estimado:</label>
+                            <input type="number" id="platillo-costo" class="form-control" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="platillo-activo">Activo:</label>
+                            <input type="checkbox" id="platillo-activo" checked>
+                        </div>
+
+                        <h4>Ingredientes</h4>
+                        <div class="ingredientes-platillo">
+                            <div class="form-group">
+                                <select id="ingrediente-platillo" class="form-control">
+                                    <option value="">Seleccionar ingrediente...</option>
+                                </select>
+                                <input type="number" id="ingrediente-cantidad" class="form-control" placeholder="Cantidad" step="0.01" min="0">
+                                <button id="agregar-ingrediente-btn" class="btn btn-primary">Agregar</button>
+                            </div>
+                            <table id="ingredientes-platillo" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Ingrediente</th>
+                                        <th>Cantidad</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                        <button id="guardar-platillo-btn" class="btn btn-primary">Guardar Platillo</button>
+                        <button id="nuevo-platillo-btn" class="btn btn-secondary">Nuevo Platillo</button>
+                        <input type="hidden" id="platillo-id">
+                    </div>
+
+                    <div class="platillos-lista">
+                        <h3>Lista de Platillos</h3>
+                        <div class="form-group">
+                            <input type="text" id="buscar-platillo" class="form-control" placeholder="Buscar platillo...">
+                            <select id="filtro-categoria" class="form-control">
+                                <option value="">Todas las categorías</option>
+                            </select>
+                        </div>
+                        <table id="tabla-platillos" class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Precio</th>
+                                    <th>Costo</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <button id="generar-reporte-platillos" class="btn btn-info">Generar Reporte</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección Clientes -->
+            <section id="clientes" class="section">
+                <h2><i class="fas fa-users"></i> Módulo de Clientes</h2>
+                <div class="clientes-container">
+                    <div class="clientes-form">
+                        <h3>Gestionar Clientes</h3>
+                        <div class="form-group">
+                            <label for="cliente-nombre">Nombre:</label>
+                            <input type="text" id="cliente-nombre" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cliente-telefono">Teléfono:</label>
+                            <input type="text" id="cliente-telefono" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cliente-email">Email:</label>
+                            <input type="email" id="cliente-email" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cliente-direccion">Dirección:</label>
+                            <textarea id="cliente-direccion" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <button id="guardar-cliente-btn" class="btn btn-primary">Guardar Cliente</button>
+                        <button id="nuevo-cliente-btn" class="btn btn-secondary">Nuevo Cliente</button>
+                        <input type="hidden" id="cliente-id">
+                    </div>
+
+                    <div class="clientes-lista">
+                        <h3>Lista de Clientes</h3>
+                        <div class="form-group">
+                            <input type="text" id="buscar-cliente" class="form-control" placeholder="Buscar cliente...">
+                        </div>
+                        <table id="tabla-clientes" class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Teléfono</th>
+                                    <th>Email</th>
+                                    <th>Registro</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <button id="generar-reporte-clientes" class="btn btn-info">Generar Reporte</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección Finanzas -->
+            <section id="finanzas" class="section">
+                <h2><i class="fas fa-chart-line"></i> Módulo de Finanzas</h2>
+                <div class="finanzas-container">
+                    <div class="finanzas-filtros">
+                        <h3>Filtros</h3>
+                        <div class="form-group">
+                            <label for="finanzas-tipo">Tipo:</label>
+                            <select id="finanzas-tipo" class="form-control">
+                                <option value="todos">Todos</option>
+                                <option value="ingresos">Ingresos</option>
+                                <option value="gastos">Gastos</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="finanzas-fecha-inicio">Fecha Inicio:</label>
+                            <input type="date" id="finanzas-fecha-inicio" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="finanzas-fecha-fin">Fecha Fin:</label>
+                            <input type="date" id="finanzas-fecha-fin" class="form-control">
+                        </div>
+
+                        <button id="aplicar-filtros-btn" class="btn btn-primary">Aplicar Filtros</button>
+                    </div>
+
+                    <div class="finanzas-resumen">
+                        <h3>Resumen Financiero</h3>
+                        <div class="resumen-grid">
+                            <div class="card">
+                                <h4>Ingresos Totales</h4>
+                                <p id="ingresos-totales">Q0.00</p>
+                            </div>
+                            <div class="card">
+                                <h4>Gastos Totales</h4>
+                                <p id="gastos-totales">Q0.00</p>
+                            </div>
+                            <div class="card">
+                                <h4>Balance Neto</h4>
+                                <p id="balance-neto">Q0.00</p>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="finanzasChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="finanzas-detalle">
+                        <h3>Detalle de Transacciones</h3>
+                        <table id="tabla-finanzas" class="table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Concepto</th>
+                                    <th>Monto</th>
+                                    <th>Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <button id="generar-reporte-finanzas" class="btn btn-info">Generar Reporte</button>
+                    </div>
+
+                    <div class="finanzas-form">
+                        <h3>Registrar Transacción</h3>
+                        <div class="form-group">
+                            <label for="transaccion-tipo">Tipo:</label>
+                            <select id="transaccion-tipo" class="form-control">
+                                <option value="ingreso">Ingreso</option>
+                                <option value="gasto">Gasto</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transaccion-concepto">Concepto:</label>
+                            <input type="text" id="transaccion-concepto" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transaccion-monto">Monto:</label>
+                            <input type="number" id="transaccion-monto" class="form-control" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-group" id="gasto-ingrediente-container" style="display: none;">
+                            <label for="gasto-ingrediente">Ingrediente (opcional):</label>
+                            <select id="gasto-ingrediente" class="form-control">
+                                <option value="">No aplica</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transaccion-descripcion">Descripción:</label>
+                            <textarea id="transaccion-descripcion" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <button id="guardar-transaccion-btn" class="btn btn-primary">Guardar Transacción</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal para nuevo cliente -->
+        <div id="cliente-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Nuevo Cliente</h3>
+                <div class="form-group">
+                    <label for="modal-cliente-nombre">Nombre:</label>
+                    <input type="text" id="modal-cliente-nombre" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="modal-cliente-telefono">Teléfono:</label>
+                    <input type="text" id="modal-cliente-telefono" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="modal-cliente-email">Email:</label>
+                    <input type="email" id="modal-cliente-email" class="form-control">
+                </div>
+                <button id="guardar-modal-cliente-btn" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+
+        <!-- Modal para detalles de venta -->
+        <div id="detalle-venta-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Detalle de Venta</h3>
+                <div id="detalle-venta-info"></div>
+                <button id="imprimir-venta-btn" class="btn btn-info">Imprimir Ticket</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Sistema de Restaurante</p>
+        </footer>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/platillos.js"></script>
+    <script src="js/inventario.js"></script>
+    <script src="js/ventas.js"></script>
+    <script src="js/clientes.js"></script>
+    <script src="js/finanzas.js"></script>
+</body>
+</html>
